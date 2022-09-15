@@ -32,6 +32,8 @@ class Motherboard:
         sound_sample_rate,
         cgb,
         randomize=False,
+        serial_address=None,
+        serial_bind=None,
     ):
         if bootrom_file is not None:
             logger.info("Boot-ROM file provided")
@@ -53,6 +55,7 @@ class Motherboard:
         self.interaction = interaction.Interaction()
         self.ram = ram.RAM(cgb, randomize=randomize)
         self.cpu = cpu.CPU(self)
+        self.serial = serial.Serial(serial_address, serial_bind)
 
         if cgb:
             self.lcd = lcd.CGBLCD(
@@ -228,6 +231,7 @@ class Motherboard:
 
     def stop(self, save):
         self.sound.stop()
+        self.serial.stop()
         if save:
             self.cartridge.stop()
 
@@ -328,7 +332,7 @@ class Motherboard:
                         self.lcd._cycles_to_interrupt,  # TODO: Be more agreesive. Only if actual interrupt enabled.
                         self.lcd._cycles_to_frame,
                         self.sound._cycles_to_interrupt,
-                        self.serial._cycles_to_interrupt,
+                        self.serial.cycles_to_transmit,
                         mode0_cycles,
                     ),
                 )
@@ -346,6 +350,8 @@ class Motherboard:
 
             if self.timer.tick(self.cpu.cycles):
                 self.cpu.set_interruptflag(INTR_TIMER)
+            if self.serial.tick(cycles):
+                self.cpu.set_interruptflag(INTR_SERIAL)
 
             if lcd_interrupt := self.lcd.tick(self.cpu.cycles):
                 self.cpu.set_interruptflag(lcd_interrupt)
@@ -534,9 +540,9 @@ class Motherboard:
                     self.serialbuffer[self.serialbuffer_count] = value
                     self.serialbuffer_count += 1
                     self.serialbuffer_count &= 0x3FF
-                    self.serial.set_SB(value)
+                    self.serial.SB = value
                 elif i == 0xFF02:
-                    self.serial.set_SC(value)
+                    self.serial.SC = value
             elif 0xFF04 <= i <= 0xFF07:
                 if self.timer.tick(self.cpu.cycles):
                     self.cpu.set_interruptflag(INTR_TIMER)
