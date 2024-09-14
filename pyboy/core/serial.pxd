@@ -1,29 +1,28 @@
-#
-# License: See LICENSE.md file
-# GitHub: https://github.com/Baekalfen/PyBoy
-#
+# serial.pxd
 
-from libc.stdint cimport int64_t, uint8_t, uint16_t, uint32_t, uint64_t
-
-from pyboy.utils cimport IntIOInterface
-
-import cython
-
-from pyboy.logging.logging cimport Logger
-
-cdef uint64_t MAX_CYCLES, CYCLES_8192HZ
-cdef Logger logger
+cdef int INTR_VBLANK, INTR_LCDC, INTR_TIMER, INTR_SERIAL, INTR_HIGHTOLOW
+cdef int SERIAL_FREQ, CPU_FREQ
+cdef object async_recv
 
 cdef class Serial:
-    cdef uint64_t SB, SC
-    cdef int64_t _cycles_to_interrupt
-    cdef uint64_t last_cycles, clock, clock_target
-    cdef bint transfer_enabled, double_speed, internal_clock
+    cdef object mb
+    cdef int SC
+    cdef int SB
+    cdef object connection
+    cdef object recv
+    cdef object recv_t
+    cdef bint quitting
+    cdef int trans_bits
+    cdef int cycles_count
+    cdef int cycles_target
+    cdef int serial_interrupt_based
+    cdef bint waiting_for_byte
+    cdef int byte_retry_count
+    cdef object binding_connection
+    cdef int is_master
+    cdef bint transfer_enabled
 
-    cdef bint tick(self, uint64_t) noexcept nogil
-
-    cdef void set_SB(self, uint8_t) noexcept nogil
-    cdef void set_SC(self, uint8_t) noexcept nogil
-
-    cdef int save_state(self, IntIOInterface) except -1
-    cdef int load_state(self, IntIOInterface, int) except -1
+    cpdef send_bit(self)
+    cpdef bint tick(self, int cycles) noexcept with gil
+    cpdef int cycles_to_transmit(self) noexcept with gil
+    cpdef stop(self)

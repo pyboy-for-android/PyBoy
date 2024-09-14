@@ -56,7 +56,8 @@ class Motherboard:
         self.interaction = interaction.Interaction()
         self.ram = ram.RAM(cgb, randomize=randomize)
         self.cpu = cpu.CPU(self)
-        self.serial = serial.Serial(serial_address, serial_bind, serial_interrupt_based)
+        self.serial_enabled = (serial_address or None) or (serial_bind or None)
+        self.serial = serial.Serial(self, serial_address or None, serial_bind or None, serial_interrupt_based)
 
         if cgb:
             self.lcd = lcd.CGBLCD(
@@ -351,7 +352,8 @@ class Motherboard:
 
             if self.timer.tick(self.cpu.cycles):
                 self.cpu.set_interruptflag(INTR_TIMER)
-            if self.serial.tick(cycles):
+
+            if self.serial_enabled and self.serial.tick(cycles):
                 self.cpu.set_interruptflag(INTR_SERIAL)
 
             if lcd_interrupt := self.lcd.tick(self.cpu.cycles):

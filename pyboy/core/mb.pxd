@@ -14,6 +14,7 @@ cimport pyboy.core.interaction
 cimport pyboy.core.lcd
 cimport pyboy.core.ram
 cimport pyboy.core.serial
+cimport pyboy.core.serial
 cimport pyboy.core.sound
 cimport pyboy.core.timer
 from pyboy.logging.logging cimport Logger
@@ -39,7 +40,8 @@ cdef class Motherboard:
     cdef pyboy.core.serial.Serial serial
     cdef pyboy.core.sound.Sound sound
     cdef pyboy.core.cartridge.base_mbc.BaseMBC cartridge
-    cdef object serial
+    cdef pyboy.core.serial.Serial serial
+    cdef bint serial_enabled
     cdef bint bootrom_enabled
     cdef char[1024] serialbuffer
     cdef uint16_t serialbuffer_count
