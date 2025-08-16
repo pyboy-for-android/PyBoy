@@ -42,12 +42,10 @@ class Motherboard:
 
         self.bootrom = bootrom.BootROM(bootrom_file, self.cartridge.cgb)
         if self.bootrom.cgb:
-            logger.debug(f"Boot ROM type auto-detected to {("CGB" if self.bootrom.cgb else "DMG")}")
             cgb = cgb or True
 
         if cgb is None:
             cgb = self.cartridge.cgb
-            logger.debug(f"Cartridge type auto-detected to {("CGB" if self.cartridge.cgb else "DMG")}")
 
         self.timer = timer.Timer()
         self.serial = serial.Serial()

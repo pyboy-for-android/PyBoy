@@ -69,7 +69,6 @@ class CPU:
             self.interrupts_flag_register = f.read()
         if state_version >= 12:
             self.cycles = f.read_64bit()
-        logger.debug(f"State loaded: {self.dump_state("")}")
 
     def dump_state(self, sym_label):
         opcode_data = [
