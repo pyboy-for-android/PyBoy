@@ -148,7 +148,7 @@ class PyBoy:
 
         _log_level(log_level)
 
-        logger.debug("Cython compilation status: %s", cython_compiled)
+        logger.debug(f"Cython compilation status: {cython_compiled}")
 
         if "bootrom_file" in kwargs:
             logger.error(
@@ -220,7 +220,7 @@ class PyBoy:
 
         for k, v in kwargs.items():
             if k not in defaults and k not in plugin_manager_keywords:
-                logger.error("Unknown keyword argument: %s", k)
+                logger.error(f"Unknown keyword argument: {k}")
                 raise KeyError(f"Unknown keyword argument: {k}")
 
         # Performance measures
@@ -577,14 +577,14 @@ class PyBoy:
             elif event == WindowEvent.RELEASE_SPEED_UP:
                 # Switch between unlimited and 1x real-time emulation speed
                 self.target_emulationspeed = int(bool(self.target_emulationspeed) ^ True)
-                logger.debug("Speed limit: %d", self.target_emulationspeed)
+                logger.debug(f"Speed limit: {self.target_emulationspeed}")
             elif event == WindowEvent.STATE_SAVE:
                 with open(self.gamerom + ".state", "wb") as f:
                     self.mb.save_state(IntIOWrapper(f))
             elif event == WindowEvent.STATE_LOAD:
                 state_path = self.gamerom + ".state"
                 if not os.path.isfile(state_path):
-                    logger.error("State file not found: %s", state_path)
+                    logger.error(f"State file not found: {state_path}")
                     continue
                 with open(state_path, "rb") as f:
                     self.mb.load_state(IntIOWrapper(f))
@@ -1119,7 +1119,7 @@ class PyBoy:
         gamerom_file_no_ext, rom_ext = os.path.splitext(self.gamerom)
         for sym_path in [self.symbols_file, gamerom_file_no_ext + ".sym", gamerom_file_no_ext + rom_ext + ".sym"]:
             if sym_path and os.path.isfile(sym_path):
-                logger.info("Loading symbol file: %s", sym_path)
+                logger.info(f"Loading symbol file: {sym_path}")
                 with open(sym_path) as f:
                     for _line in f.readlines():
                         line = _line.strip()
@@ -1146,7 +1146,7 @@ class PyBoy:
                             self.rom_symbols[bank][addr].append(sym_label)
                             self.rom_symbols_inverse[sym_label] = (bank, addr)
                         except ValueError:
-                            logger.warning("Skipping .sym line: %s", line.strip())
+                            logger.warning(f"Skipping .sym line: {line.strip()}")
         return self.rom_symbols
 
     def _lookup_symbol(self, symbol):
@@ -1238,7 +1238,7 @@ class PyBoy:
             raise ValueError("Hook already registered for this bank and address.")
         self.mb.breakpoint_add(bank, addr)
         bank_addr_opcode = (bank & 0xFF) << 24 | (addr & 0xFFFF) << 8 | (opcode & 0xFF)
-        logger.debug("Adding hook for opcode %08x", bank_addr_opcode)
+        logger.debug(f"Adding hook for opcode {bank_addr_opcode}")
         self._hooks[bank_addr_opcode] = (callback, context)
 
     def hook_deregister(self, bank, addr):
@@ -1281,7 +1281,8 @@ class PyBoy:
         self._hooks.pop(bank_addr_opcode)
 
     def _handle_hooks(self):
-        if _handler := self._hooks.get(self.mb.breakpoint_waiting):
+        handler = self._hooks.get(self.mb.breakpoint_waiting)
+        if _handler:
             (callback, context) = _handler
             callback(context)
             return True

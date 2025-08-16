@@ -32,8 +32,8 @@ def load_cartridge(filename):
 
     cart_line = ", ".join([x for x, y in zip(["SRAM", "Battery", "RTC"], cartinfo[1:]) if y])
     cart_name = cartinfo[0].__name__
-    logger.debug("Cartridge type: 0x%0.2x - %s, %s", carttype, cart_name, cart_line)
-    logger.debug("Cartridge size: %d ROM banks of 16KB, %s RAM banks of 8KB", len(rombanks), external_ram_count)
+    logger.debug(f"Cartridge type: 0x{carttype} - {cart_name}, {cart_line}")
+    logger.debug(f"Cartridge size: {len(rombanks)} ROM banks of 16KB, {external_ram_count} RAM banks of 8KB")
     cartmeta = CARTRIDGE_TABLE[carttype]
 
     return cartmeta[0](filename, rombanks, external_ram_count, carttype, *cartmeta[1:])
@@ -51,7 +51,7 @@ def load_romfile(filename):
     with open(filename, "rb") as romfile:
         romdata = array("B", romfile.read())
 
-    logger.debug("Loading ROM file: %d bytes", len(romdata))
+    logger.debug(f"Loading ROM file: {len(romdata)} bytes")
     if len(romdata) == 0:
         logger.error("ROM file is empty!")
         raise PyBoyException("Empty ROM file")

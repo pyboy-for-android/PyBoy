@@ -37,10 +37,8 @@ class ScreenshotRecorder(PyBoyPlugin):
 
         self.pyboy.screen.image.save(path)
 
-        logger.info("Screenshot saved in {}".format(path))
-
     def enabled(self):
         if Image is None:
-            logger.warning('%s: Missing dependency "Pillow". Screenshots disabled', __name__)
+            logger.warning(f'{__name__}: Missing dependency "Pillow". Screenshots disabled')
             return False
         return True

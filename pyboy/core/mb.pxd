@@ -55,21 +55,21 @@ cdef class Motherboard:
     cdef int64_t breakpoint_waiting
     cdef int64_t breakpoint_add(self, int64_t, int64_t) except -1 with gil
     cdef int64_t breakpoint_remove(self, int64_t, int64_t) except -1 with gil
-    cdef inline tuple[int64_t, int64_t, int64_t] breakpoint_reached(self) noexcept with gil
-    cdef inline void breakpoint_reinject(self) noexcept nogil
+    cdef inline tuple breakpoint_reached(self) noexcept with gil
+    cdef inline void breakpoint_reinject(self) noexcept
 
     cdef void buttonevent(self, WindowEvent) noexcept
     cdef void stop(self, bint) noexcept
     @cython.locals(cycles=int64_t, cycles_target=int64_t, mode0_cycles=int64_t, breakpoint_index=int64_t)
-    cdef bint tick(self) noexcept nogil
+    cdef bint tick(self) noexcept
 
-    cdef void switch_speed(self) noexcept nogil
+    cdef void switch_speed(self) noexcept
 
-    cdef uint8_t getitem(self, uint16_t) noexcept nogil
-    cdef void setitem(self, uint16_t, uint8_t) noexcept nogil
+    cdef uint8_t getitem(self, uint16_t) noexcept
+    cdef void setitem(self, uint16_t, uint8_t) noexcept
 
     @cython.locals(offset=cython.int, dst=cython.int, n=cython.int)
-    cdef void transfer_DMA(self, uint8_t) noexcept nogil
+    cdef void transfer_DMA(self, uint8_t) noexcept
     cdef int save_state(self, IntIOInterface) except -1
     cdef int load_state(self, IntIOInterface) except -1
 
@@ -85,8 +85,8 @@ cdef class HDMA:
     cdef uint16_t curr_src
     cdef uint16_t curr_dst
 
-    cdef void set_hdma5(self, uint8_t, Motherboard) noexcept nogil
-    cdef int tick(self, Motherboard) noexcept nogil
+    cdef void set_hdma5(self, uint8_t, Motherboard) noexcept
+    cdef int tick(self, Motherboard) noexcept
 
     cdef int save_state(self, IntIOInterface) except -1
     cdef int load_state(self, IntIOInterface, int) except -1

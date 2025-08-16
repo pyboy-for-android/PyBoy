@@ -28,11 +28,11 @@ class DebugPrompt(PyBoyPlugin):
 
             bank, addr = self.parse_bank_addr_sym_label(b)
             if bank is None or addr is None:
-                logger.error("Couldn't parse address or label: %s", b)
+                logger.error(f"Couldn't parse address or label: {b}")
                 pass
             else:
                 self.mb.breakpoint_add(bank, addr)
-                logger.info("Added breakpoint for address or label: %s", b)
+                logger.info(f"Added breakpoint for address or label: {b}")
 
     def enabled(self):
         return self.pyboy_argv.get("breakpoints")

@@ -89,7 +89,6 @@ class build_ext(_build_ext):
                 "overflowcheck": False,
                 # "profile" : True,
                 "wraparound": False,
-                "legacy_implicit_noexcept": True,
             },
         )
 

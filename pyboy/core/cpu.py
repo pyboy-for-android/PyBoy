@@ -69,7 +69,7 @@ class CPU:
             self.interrupts_flag_register = f.read()
         if state_version >= 12:
             self.cycles = f.read_64bit()
-        logger.debug("State loaded: %s", self.dump_state(""))
+        logger.debug(f"State loaded: {self.dump_state("")}")
 
     def dump_state(self, sym_label):
         opcode_data = [
@@ -80,9 +80,13 @@ class CPU:
         opcode_length = opcodes.OPCODE_LENGTHS[opcode]
         opcode_str = f"Opcode: [{opcodes.CPU_COMMANDS[opcode]}]"
         if opcode == 0xCB:
-            opcode_str += f" {opcodes.CPU_COMMANDS[opcode_data[1]+0x100]}"
+            extended_opcode_name = opcodes.CPU_COMMANDS[opcode_data[1] + 0x100]
+            opcode_str += f" {extended_opcode_name}"
         else:
-            opcode_str += " " + " ".join(f"{d:02X}" for d in opcode_data[1:opcode_length])
+            hex_bytes = []
+            for d in opcode_data[1:opcode_length]:
+                hex_bytes.append(f"{d:02X}")
+            opcode_str += " " + " ".join(hex_bytes)
 
         return (
             "\n"

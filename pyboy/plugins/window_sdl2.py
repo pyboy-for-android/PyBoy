@@ -216,10 +216,10 @@ class WindowSDL2(PyBoyWindowPlugin):
                     self.sound_paused = False
                 else:
                     self.sound_support = False
-                    logger.warning("SDL_OpenAudioDevice failed: %s", sdl2.SDL_GetError().decode())
+                    logger.warning(f"SDL_OpenAudioDevice failed: {sdl2.SDL_GetError().decode()}")
             else:
                 self.sound_support = False
-                logger.warning("SDL_InitSubSystem audio failed: %s", sdl2.SDL_GetError().decode())
+                logger.warning(f"SDL_InitSubSystem audio failed: {sdl2.SDL_GetError().decode()}")
         else:
             self.sound_support = False
 
@@ -266,11 +266,11 @@ class WindowSDL2(PyBoyWindowPlugin):
                 SOUND_PREBUFFER_THRESHOLD + SOUND_DESYNC_THRESHOLD
             ):
                 logger.debug(
-                    "Sound device buffer drifting above threshold (%s frames), resetting buffer", SOUND_DESYNC_THRESHOLD
+                    f"Sound device buffer drifting above threshold ({SOUND_DESYNC_THRESHOLD} frames), resetting buffer"
                 )
                 sdl2.SDL_ClearQueuedAudio(self.sound_device)
 
-            length = min(self.sound.audiobuffer_head, self.sound.audiobuffer_length)
+            length = int(min(self.sound.audiobuffer_head, self.sound.audiobuffer_length))
             # TODO: Maybe combine the zero and mixing steps
             for i in range(length):
                 self.mixingbuffer[i] = 0

@@ -15,7 +15,8 @@ from pyboy.utils import (
     MAX_CYCLES,
 )
 
-from . import bootrom, cartridge, cpu, interaction, lcd, ram, serial, sound, timer
+from . import bootrom, cartridge, interaction, lcd, ram, serial, sound, timer
+import pyboy.core.cpu
 
 logger = pyboy.logging.get_logger(__name__)
 
@@ -37,22 +38,22 @@ class Motherboard:
             logger.info("Boot-ROM file provided")
 
         self.cartridge = cartridge.load_cartridge(gamerom)
-        logger.debug("Cartridge started:\n%s", str(self.cartridge))
+        logger.debug(f"Cartridge started:\n{str(self.cartridge)}")
 
         self.bootrom = bootrom.BootROM(bootrom_file, self.cartridge.cgb)
         if self.bootrom.cgb:
-            logger.debug("Boot ROM type auto-detected to %s", ("CGB" if self.bootrom.cgb else "DMG"))
+            logger.debug(f"Boot ROM type auto-detected to {("CGB" if self.bootrom.cgb else "DMG")}")
             cgb = cgb or True
 
         if cgb is None:
             cgb = self.cartridge.cgb
-            logger.debug("Cartridge type auto-detected to %s", ("CGB" if self.cartridge.cgb else "DMG"))
+            logger.debug(f"Cartridge type auto-detected to {("CGB" if self.cartridge.cgb else "DMG")}")
 
         self.timer = timer.Timer()
         self.serial = serial.Serial()
         self.interaction = interaction.Interaction()
         self.ram = ram.RAM(cgb, randomize=randomize)
-        self.cpu = cpu.CPU(self)
+        self.cpu = pyboy.core.cpu.CPU(self)
 
         if cgb:
             self.lcd = lcd.CGBLCD(
@@ -101,7 +102,7 @@ class Motherboard:
             self.lcd.speed_shift = 1 if self.double_speed else 0
             self.sound.tick(self.cpu.cycles)
             self.sound.speed_shift = 1 if self.double_speed else 0
-            logger.debug("CGB double speed is now: %d", self.double_speed)
+            logger.debug(f"CGB double speed is now: {self.double_speed}")
             self.key1 ^= 0b10000001
 
     def breakpoint_add(self, bank, addr):
@@ -198,11 +199,11 @@ class Motherboard:
         if opcode is not None:
             # Breakpoint hit
             addr = pc
-            logger.debug("Breakpoint reached: %02x:%04x %02x", bank, addr, opcode)
+            logger.debug(f"Breakpoint reached: {bank}:{addr} {opcode}")
             self.breakpoint_waiting = (bank & 0xFF) << 24 | (addr & 0xFFFF) << 8 | (opcode & 0xFF)
-            logger.debug("Breakpoint waiting: %08x", self.breakpoint_waiting)
+            logger.debug(f"Breakpoint waiting: {self.breakpoint_waiting}")
             return (bank, addr, opcode)
-        logger.debug("Invalid breakpoint reached: %04x", self.cpu.PC)
+        logger.debug(f"Invalid breakpoint reached: {self.cpu.PC}")
         return (-1, -1, -1)
 
     def breakpoint_reinject(self):
@@ -213,7 +214,7 @@ class Motherboard:
         if bank == 0xFF:
             bank = -1
         addr = (self.breakpoint_waiting >> 8) & 0xFFFF
-        logger.debug("Breakpoint reinjecting: %02x:%02x", bank, addr)
+        logger.debug(f"Breakpoint reinjecting: {bank}:{addr}")
         self.breakpoint_add(bank, addr)
         self.breakpoint_waiting = -1
 
@@ -256,7 +257,7 @@ class Motherboard:
         logger.debug("Loading state...")
         state_version = f.read()
         if state_version >= 2:
-            logger.debug("State version: %d", state_version)
+            logger.debug(f"State version: {state_version}")
             # From version 2 and above, this is the version number
             self.bootrom_enabled = f.read()
         else:
@@ -347,7 +348,8 @@ class Motherboard:
             if self.timer.tick(self.cpu.cycles):
                 self.cpu.set_interruptflag(INTR_TIMER)
 
-            if lcd_interrupt := self.lcd.tick(self.cpu.cycles):
+            lcd_interrupt = self.lcd.tick(self.cpu.cycles)
+            if lcd_interrupt:
                 self.cpu.set_interruptflag(lcd_interrupt)
 
             if self.breakpoint_singlestep:
@@ -415,7 +417,8 @@ class Motherboard:
                 self.sound.tick(self.cpu.cycles)
                 return self.sound.get(i - 0xFF10)
             elif 0xFF40 <= i <= 0xFF4B:
-                if lcd_interrupt := self.lcd.tick(self.cpu.cycles):
+                lcd_interrupt = self.lcd.tick(self.cpu.cycles)
+                if lcd_interrupt:
                     self.cpu.set_interruptflag(lcd_interrupt)
 
                 if i == 0xFF40:
@@ -564,7 +567,8 @@ class Motherboard:
                 self.sound.tick(self.cpu.cycles)
                 self.sound.set(i - 0xFF10, value)
             elif 0xFF40 <= i <= 0xFF4B:
-                if lcd_interrupt := self.lcd.tick(self.cpu.cycles):
+                lcd_interrupt = self.lcd.tick(self.cpu.cycles)
+                if lcd_interrupt:
                     self.cpu.set_interruptflag(lcd_interrupt)
 
                 if i == 0xFF40:
