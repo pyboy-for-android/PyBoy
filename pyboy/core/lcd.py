@@ -979,36 +979,50 @@ class CGBRenderer(Renderer):
             self._tilecache1_state[i] = 0
 
     def update_tilecache0(self, lcd, t, bank):
+        if t < 0 or t >= len(self._tilecache0_state):
+            return  # Tile fuera de rango, no hacemos nada
+
         if self._tilecache0_state[t]:
             return
 
-        if bank:
-            vram_bank = lcd.VRAM1
-        else:
-            vram_bank = lcd.VRAM0
+        vram_bank = lcd.VRAM1 if bank else lcd.VRAM0
 
-        # for t in self.tiles_changed0:
-        for k in range(0, 16, 2):  # 2 bytes for each line
-            byte1 = vram_bank[t * 16 + k]
-            byte2 = vram_bank[t * 16 + k + 1]
-            y = (t * 16 + k) // 2
+        for k in range(0, 16, 2):  # 2 bytes por línea
+            idx = t * 16 + k
+            if idx + 1 >= len(vram_bank):
+                continue  # Ignoramos este tile
+
+            byte1 = vram_bank[idx]
+            byte2 = vram_bank[idx + 1]
+            y = idx // 2
+
+            if y >= len(self._tilecache0_64):
+                continue  # Ignoramos si la caché no tiene espacio
 
             self._tilecache0_64[y] = self.colorcode(byte1, byte2)
 
         self._tilecache0_state[t] = 1
 
     def update_tilecache1(self, lcd, t, bank):
+        if t < 0 or t >= len(self._tilecache1_state):
+            return  # Tile fuera de rango
+
         if self._tilecache1_state[t]:
             return
-        if bank:
-            vram_bank = lcd.VRAM1
-        else:
-            vram_bank = lcd.VRAM0
-        # for t in self.tiles_changed0:
-        for k in range(0, 16, 2):  # 2 bytes for each line
-            byte1 = vram_bank[t * 16 + k]
-            byte2 = vram_bank[t * 16 + k + 1]
-            y = (t * 16 + k) // 2
+
+        vram_bank = lcd.VRAM1 if bank else lcd.VRAM0
+
+        for k in range(0, 16, 2):
+            idx = t * 16 + k
+            if idx + 1 >= len(vram_bank):
+                continue
+
+            byte1 = vram_bank[idx]
+            byte2 = vram_bank[idx + 1]
+            y = idx // 2
+
+            if y >= len(self._tilecache1_64):
+                continue
 
             self._tilecache1_64[y] = self.colorcode(byte1, byte2)
 
