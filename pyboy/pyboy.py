@@ -1282,8 +1282,8 @@ class PyBoy:
 
     def _handle_hooks(self):
         handler = self._hooks.get(self.mb.breakpoint_waiting)
-        if _handler:
-            (callback, context) = _handler
+        if handler:
+            (callback, context) = handler
             callback(context)
             return True
         return False
