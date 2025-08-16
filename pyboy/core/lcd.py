@@ -872,7 +872,6 @@ class CGBRenderer(Renderer):
         self.clear_cache()
 
     def _cgb_get_background_map_attributes(self, lcd, i):
-        i = i % VIDEO_RAM
         tile_num = lcd.VRAM1[i]
         palette = tile_num & 0b111
         vbank = (tile_num >> 3) & 1
