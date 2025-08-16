@@ -206,7 +206,7 @@ cdef class Renderer:
         colorcode_low=uint64_t,
         colorcode_high=uint64_t,
     )
-    cdef void update_tilecache0(self, LCD, int, int) noexcept nogil
+    cdef void update_tilecache0(self, LCD, int, int) noexcept 
     @cython.locals(
         x=int,
         t=int,
@@ -217,7 +217,7 @@ cdef class Renderer:
         colorcode_low=uint64_t,
         colorcode_high=uint64_t,
     )
-    cdef void update_tilecache1(self, LCD, int, int) noexcept nogil # CGB Only
+    cdef void update_tilecache1(self, LCD, int, int) noexcept  # CGB Only
     @cython.locals(
         x=int,
         t=int,
