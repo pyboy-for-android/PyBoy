@@ -55,7 +55,7 @@ class build_ext(_build_ext):
         ):
             multiprocessing.set_start_method("fork", force=True)
 
-        cflags = ["-O3"]
+        cflags = ["-O0", "-g"]
         if not DEBUG:
             cflags.append("-DCYTHON_WITHOUT_ASSERTIONS")
         # NOTE: For performance. Check if other platforms need an equivalent change.
@@ -68,7 +68,7 @@ class build_ext(_build_ext):
                 src.split(".")[0].replace(os.sep, "."),
                 [src],
                 extra_compile_args=cflags,
-                extra_link_args=[] if DEBUG else ["-s", "-w"],
+                extra_link_args=[],
                 include_dirs=[np.get_include()],
             ),
             list(py_pxd_files),
