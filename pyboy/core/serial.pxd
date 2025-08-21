@@ -20,10 +20,10 @@ cdef class Serial:
     cdef uint64_t last_cycles, clock, clock_target
     cdef bint transfer_enabled, double_speed, internal_clock
 
-    cdef bint tick(self, uint64_t) noexcept nogil
+    cdef bint tick(self, uint64_t) noexcept 
 
-    cdef void set_SB(self, uint8_t) noexcept nogil
-    cdef void set_SC(self, uint8_t) noexcept nogil
+    cdef void set_SB(self, uint8_t) noexcept 
+    cdef void set_SC(self, uint8_t) noexcept 
 
     cdef int save_state(self, IntIOInterface) except -1
     cdef int load_state(self, IntIOInterface, int) except -1
