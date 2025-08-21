@@ -80,15 +80,15 @@ class build_ext(_build_ext):
             gdb_debug=False,
             language_level=3,
             compiler_directives={
-                "boundscheck": False,
-                "cdivision": True,
+                "boundscheck": True,
+                "cdivision": False,
                 "cdivision_warnings": False,
                 "infer_types": True,
-                "initializedcheck": False,
-                "nonecheck": False,
-                "overflowcheck": False,
+                "initializedcheck": True,
+                "nonecheck": True,
+                "overflowcheck": True,
                 # "profile" : True,
-                "wraparound": False,
+                "wraparound": True,
             },
         )
 
