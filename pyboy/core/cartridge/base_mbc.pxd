@@ -38,9 +38,9 @@ cdef class BaseMBC:
     cdef void init_rambanks(self, uint8_t) noexcept
     cdef str getgamename(self, uint8_t[:,:])
 
-    cdef uint8_t getitem(self, uint16_t) noexcept nogil
-    cdef void setitem(self, uint16_t, uint8_t) noexcept nogil
-    cdef int64_t overrideitem(self, int, uint16_t, uint8_t) except -1 nogil
+    cdef uint8_t getitem(self, uint16_t) noexcept 
+    cdef void setitem(self, uint16_t, uint8_t) noexcept 
+    cdef int64_t overrideitem(self, int, uint16_t, uint8_t) except -1 
 
 cdef class ROMOnly(BaseMBC):
-    cdef void setitem(self, uint16_t, uint8_t) noexcept nogil
+    cdef void setitem(self, uint16_t, uint8_t) noexcept 
