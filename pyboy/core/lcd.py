@@ -865,7 +865,7 @@ class CGBRenderer(Renderer):
         self._tilecache1_raw = array("B", [0xFF] * (TILES * 8 * 8))
 
         self._tilecache1 = memoryview(self._tilecache1_raw).cast("B", shape=(TILES * 8, 8))
-        self._tilecache1_64 = memoryview(self._tilecache1_raw).cast("Q", shape=(TILES * 8,))
+        self._tilecache1_64 = memoryview(self._tilecache1_raw).cast("I", shape=(TILES*16,))
         self._tilecache1_state = array("B", [0] * TILES)
         self.clear_cache()
 
