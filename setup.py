@@ -81,16 +81,14 @@ class build_ext(_build_ext):
             language_level=3,
             compiler_directives={
                 "boundscheck": True,
-                "wraparound": True,
-                "initializedcheck": True,  
-                "nonecheck": True,          
-                "overflowcheck": True,     
                 "cdivision": False,
                 "cdivision_warnings": False,
                 "infer_types": True,
-                "embedsignature": True,
-                "profile": True,           
-                "binding": True         
+                "initializedcheck": True,
+                "nonecheck": True,
+                "overflowcheck": True,
+                # "profile" : True,
+                "wraparound": True,
             },
         )
 
