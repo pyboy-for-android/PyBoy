@@ -4,6 +4,7 @@
 #
 
 from array import array
+import numpy as np
 from ctypes import c_void_p
 from random import getrandbits
 
@@ -862,7 +863,7 @@ class CGBRenderer(Renderer):
     def __init__(self):
         super().__init__(True)
 
-        self._tilecache1_raw = array("B", [0xFF] * (TILES * 8 * 8))
+        self._tilecache1_raw = np.zeros(TILES * 8 * 8, dtype=np.uint8)
 
         self._tilecache1 = memoryview(self._tilecache1_raw).cast("B", shape=(TILES * 8, 8))
         self._tilecache1_64 = memoryview(self._tilecache1_raw).cast("Q", shape=(TILES * 8,))
