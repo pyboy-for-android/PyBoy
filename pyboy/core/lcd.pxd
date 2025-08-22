@@ -13,8 +13,6 @@ from pyboy cimport utils
 from pyboy.logging.logging cimport Logger
 from pyboy.utils cimport IntIOInterface
 
-import numpy as np
-cimport numpy as cnp
 
 cdef uint8_t INTR_VBLANK, INTR_LCDC
 cdef uint16_t LCDC, STAT, SCY, SCX, LY, LYC, DMA, BGP, OBP0, OBP1, WY, WX
@@ -138,8 +136,8 @@ cdef class Renderer:
     cdef void blank_screen(self, LCD) noexcept 
 
     # CGB
-    cdef cnp.ndarray[cnp.uint8_t, ndim=1] _tilecache1_raw
-    cdef uint8_t[:, :] _tilecache1
+    cdef array _tilecache1_raw
+    cdef uint8_t[:,:] _tilecache1
 
     @cython.locals(
         bx=int,
