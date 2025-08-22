@@ -126,7 +126,8 @@ cdef class Renderer:
     cdef uint32_t[:,:] _screenbuffer
     cdef uint8_t[:,:] _screenbuffer_attributes
     cdef uint8_t[:,:] _tilecache0, _spritecache0, _spritecache1
-    cdef uint64_t[:] _tilecache0_64, _tilecache1_64, _spritecache0_64, _spritecache1_64
+    cdef uint64_t[:] _tilecache0_64, _spritecache0_64, _spritecache1_64
+    cdef uint32_t[:] _tilecache1_64
     cdef uint32_t[:] colorcode_table
 
     cdef int[10] sprites_to_render
