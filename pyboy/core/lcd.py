@@ -862,6 +862,8 @@ class CGBRenderer(Renderer):
     def __init__(self):
         super().__init__(True)
 
+        self._tilecache1_state = array("B", [0] * TILES)
+
         self._tilecache1_raw = array("B", [0xFF] * (TILES * 8 * 8))
 
         self._tilecache1 = memoryview(self._tilecache1_raw).cast("B", shape=(TILES * 8, 8))
