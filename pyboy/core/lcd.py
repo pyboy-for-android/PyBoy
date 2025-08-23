@@ -907,10 +907,10 @@ class CGBRenderer(Renderer):
                 # NOTE: Not allowed to return memoryview in Cython tuple
                 if vbank:
                     self.update_tilecache1(lcd, wt, vbank)
-                    tilecache = self._tilecache1
+                    tilecache = self._tilecache1[:]
                 else:
                     self.update_tilecache0(lcd, wt, vbank)
-                    tilecache = self._tilecache0
+                    tilecache = self._tilecache0[:]
 
             if w_horiflip:
                 xx = 7 - xx
@@ -930,10 +930,10 @@ class CGBRenderer(Renderer):
                 # NOTE: Not allowed to return memoryview in Cython tuple
                 if vbank:
                     self.update_tilecache1(lcd, bt, vbank)
-                    tilecache = self._tilecache1
+                    tilecache = self._tilecache1[:]
                 else:
                     self.update_tilecache0(lcd, bt, vbank)
-                    tilecache = self._tilecache0
+                    tilecache = self._tilecache0[:]
 
             if b_horiflip:
                 xx = 7 - xx
