@@ -22,9 +22,9 @@ cdef class Timer:
     cdef int64_t _cycles_to_interrupt
     cdef uint64_t last_cycles
 
-    cdef void reset(self) noexcept 
+    cdef void reset(self) noexcept nogil
     @cython.locals(divider=uint8_t)
-    cdef bint tick(self, uint64_t) noexcept 
+    cdef bint tick(self, uint64_t) noexcept nogil
 
     cdef int save_state(self, IntIOInterface) except -1
     cdef int load_state(self, IntIOInterface, int) except -1
