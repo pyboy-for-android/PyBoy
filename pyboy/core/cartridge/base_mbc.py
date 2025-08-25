@@ -16,7 +16,7 @@ logger = pyboy.logging.get_logger(__name__)
 
 class BaseMBC:
     def __init__(self, filename, rombanks, external_ram_count, carttype, sram, battery, rtc_enabled):
-        self.filename = filename + ".txt"
+        self.filename = filename + ".ram"
         self.rombanks = rombanks
         self.carttype = carttype
 
