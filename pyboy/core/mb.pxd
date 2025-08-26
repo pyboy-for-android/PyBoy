@@ -70,7 +70,7 @@ cdef class Motherboard:
 
     @cython.locals(offset=cython.int, dst=cython.int, n=cython.int)
     cdef void transfer_DMA(self, uint8_t) noexcept
-    cdef int save_state(self, IntIOInterface, bint) except -1
+    cdef int save_state(self, IntIOInterface, bint onlyRAM=*) except -1
     cdef int load_state(self, IntIOInterface) except -1
 
 cdef class HDMA:
