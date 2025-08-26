@@ -31,7 +31,7 @@ cdef class BaseMBC:
     cdef uint16_t rombank_selected_low
     cdef bint cgb
 
-    cdef int save_state(self, IntIOInterface, bint onlyRAM=False) except -1
+    cdef int save_state(self, IntIOInterface, bint) except -1
     cdef int load_state(self, IntIOInterface, int) except -1
     cdef int save_ram(self, IntIOInterface) except -1
     cdef int load_ram(self, IntIOInterface) except -1
