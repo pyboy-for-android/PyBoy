@@ -230,7 +230,7 @@ class Motherboard:
         if save:
             self.cartridge.stop()
 
-    def save_state(self, f, onlyRAM):
+    def save_state(self, f, onlyRAM = False):
         logger.debug("Saving state...")
         if(onlyRAM):
             self.cartridge.save_state(f, onlyRAM)
