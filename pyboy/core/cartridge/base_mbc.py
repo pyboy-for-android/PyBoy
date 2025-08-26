@@ -56,14 +56,17 @@ class BaseMBC:
         if self.rtc_enabled:
             self.rtc.stop()
 
-    def save_state(self, f):
-        f.write(self.rombank_selected)
-        f.write(self.rambank_selected)
-        f.write(self.rambank_enabled)
-        f.write(self.memorymodel)
-        self.save_ram(f)
-        if self.rtc_enabled:
-            self.rtc.save_state(f)
+    def save_state(self, f, onlyRAM):
+        if (onlyRAM):
+            self.save_ram(f)
+        else:
+            f.write(self.rombank_selected)
+            f.write(self.rambank_selected)
+            f.write(self.rambank_enabled)
+            f.write(self.memorymodel)
+            self.save_ram(f)
+            if self.rtc_enabled:
+                self.rtc.save_state(f)
 
     def load_state(self, f, state_version):
         self.rombank_selected = f.read()
