@@ -872,7 +872,7 @@ class PyBoy:
         else:
             self.events.append(WindowEvent(event))
 
-    def save_state(self, file_like_object):
+    def save_state(self, file_like_object, onlyRAM=False):
         """
         Saves the complete state of the emulator. It can be called at any time, and enable you to revert any progress in
         a game.
@@ -906,7 +906,7 @@ class PyBoy:
         if file_like_object.__class__.__name__ == "TextIOWrapper":
             raise PyBoyInvalidInputException("Text file not allowed. Did you specify open(..., 'wb')?")
 
-        self.mb.save_state(IntIOWrapper(file_like_object))
+        self.mb.save_state(IntIOWrapper(file_like_object), onlyRAM)
 
     def load_state(self, file_like_object):
         """

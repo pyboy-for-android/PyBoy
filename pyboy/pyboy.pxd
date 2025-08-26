@@ -79,7 +79,7 @@ cdef class PyBoy:
     @cython.locals(running=bint, _render=bint, _sound=bint)
     cpdef int64_t tick(self, int count=*, bint render=*, bint sound=*) except -1
     cpdef void stop(self, save=*) noexcept
-    cpdef int save_state(self, object) except -1
+    cpdef int save_state(self, object, bint onlyRAM=*) except -1
     cpdef int load_state(self, object) except -1
 
     @cython.locals(state_path=str)

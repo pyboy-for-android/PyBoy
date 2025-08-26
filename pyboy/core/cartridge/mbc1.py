@@ -60,11 +60,14 @@ class MBC1(BaseMBC):
         # else:
         #     logger.error("Reading address invalid: %0.4x", address)
 
-    def save_state(self, f):
+    def save_state(self, f, onlyRAM):
         # Cython doesn't like super()
-        BaseMBC.save_state(self, f)
-        f.write(self.bank_select_register1)
-        f.write(self.bank_select_register2)
+        if (onlyRAM):
+            BaseMBC.save_state(self, f, onlyRAM)
+        else:
+            BaseMBC.save_state(self, f)
+            f.write(self.bank_select_register1)
+            f.write(self.bank_select_register2)
 
     def load_state(self, f, state_version):
         # Cython doesn't like super()

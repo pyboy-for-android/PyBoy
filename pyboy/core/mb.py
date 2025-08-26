@@ -230,24 +230,27 @@ class Motherboard:
         if save:
             self.cartridge.stop()
 
-    def save_state(self, f):
+    def save_state(self, f, onlyRAM):
         logger.debug("Saving state...")
-        f.write(STATE_VERSION)
-        f.write(self.bootrom_enabled)
-        f.write(self.key1)
-        f.write(self.double_speed)
-        f.write(self.cgb)
-        if self.cgb:
-            self.hdma.save_state(f)
-        self.cpu.save_state(f)
-        self.lcd.save_state(f)
-        self.sound.save_state(f)
-        self.lcd.renderer.save_state(f)
-        self.ram.save_state(f)
-        self.timer.save_state(f)
-        self.cartridge.save_state(f)
-        self.interaction.save_state(f)
-        self.serial.save_state(f)
+        if(onlyRAM):
+            self.cartridge.save_state(f, onlyRAM)
+        else:
+            f.write(STATE_VERSION)
+            f.write(self.bootrom_enabled)
+            f.write(self.key1)
+            f.write(self.double_speed)
+            f.write(self.cgb)
+            if self.cgb:
+                self.hdma.save_state(f)
+            self.cpu.save_state(f)
+            self.lcd.save_state(f)
+            self.sound.save_state(f)
+            self.lcd.renderer.save_state(f)
+            self.ram.save_state(f)
+            self.timer.save_state(f)
+            self.cartridge.save_state(f)
+            self.interaction.save_state(f)
+            self.serial.save_state(f)
         f.flush()
         logger.debug("State saved.")
 
