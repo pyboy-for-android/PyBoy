@@ -56,7 +56,7 @@ class BaseMBC:
         if self.rtc_enabled:
             self.rtc.stop()
 
-    def save_state(self, f, onlyRAM):
+    def save_state(self, f, onlyRAM=False):
         if (onlyRAM):
             self.save_ram(f)
         else:

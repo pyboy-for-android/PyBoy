@@ -63,7 +63,7 @@ class MBC1(BaseMBC):
     def save_state(self, f, onlyRAM):
         # Cython doesn't like super()
         if (onlyRAM):
-            BaseMBC.save_state(self, f, onlyRAM)
+            BaseMBC.save_state(self, f, onlyRAM=False)
         else:
             BaseMBC.save_state(self, f)
             f.write(self.bank_select_register1)
