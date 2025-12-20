@@ -24,6 +24,8 @@ cdef class Serial:
     cdef unsigned long long _cycles_to_interrupt
 
     cpdef send_bit(self)
-    cpdef bint tick(self, int cycles) noexcept with gil
-    cpdef int cycles_to_transmit(self) noexcept with gil
+    cpdef bint tick(self, int cycles) noexcept 
+    cpdef void set_SB(self, uint8_t) noexcept 
+    cpdef void set_SC(self, uint8_t) noexcept 
+    cpdef int cycles_to_transmit(self) noexcept 
     cpdef stop(self)

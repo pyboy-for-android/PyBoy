@@ -14,15 +14,15 @@ cdef extern from "stdarg.h":
         pass
     ctypedef struct fake_type:
         pass
-    void va_start(va_list, void* arg) noexcept nogil
-    void* va_arg(va_list, fake_type) noexcept nogil
-    void va_end(va_list) noexcept nogil
+    void va_start(va_list, void* arg) noexcept
+    void* va_arg(va_list, fake_type) noexcept
+    void va_end(va_list) noexcept
     fake_type int_type "int"
     fake_type pyobject_type "PyObject*"
     fake_type double_type "double"
 
 cdef extern from "stdio.h":
-    cdef int vfprintf(FILE *stream, const char* format, va_list arg) noexcept nogil
+    cdef int vfprintf(FILE *stream, const char* format, va_list arg) noexcept
 
 
 cdef list get_params(str fmt):
@@ -49,7 +49,7 @@ cdef class Logger:
     def __init__(self, str name):
         self.name = name
 
-    cpdef void critical(self, str fmt, ...) noexcept with gil:
+    cpdef void critical(self, str fmt, ...) noexcept :
         if get_log_level() > CRITICAL:
             return
 
@@ -60,7 +60,7 @@ cdef class Logger:
 
         _log(self.name, "CRITICAL", CRITICAL, fmt, args)
 
-    cpdef void error(self, str fmt, ...) noexcept with gil:
+    cpdef void error(self, str fmt, ...) noexcept :
         if get_log_level() > ERROR:
             return
 
@@ -71,7 +71,7 @@ cdef class Logger:
 
         _log(self.name, "ERROR", ERROR, fmt, args)
 
-    cpdef void warning(self, str fmt, ...) noexcept with gil:
+    cpdef void warning(self, str fmt, ...) noexcept :
         if get_log_level() > WARNING:
             return
 
@@ -82,7 +82,7 @@ cdef class Logger:
 
         _log(self.name, "WARNING", WARNING, fmt, args)
 
-    cpdef void info(self, str fmt, ...) noexcept with gil:
+    cpdef void info(self, str fmt, ...) noexcept :
         if get_log_level() > INFO:
             return
 
@@ -93,7 +93,7 @@ cdef class Logger:
 
         _log(self.name, "INFO", INFO, fmt, args)
 
-    cpdef void debug(self, str fmt, ...) noexcept with gil:
+    cpdef void debug(self, str fmt, ...) noexcept :
         if get_log_level() > DEBUG:
             return
 

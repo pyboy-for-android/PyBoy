@@ -56,16 +56,16 @@ cdef class Sound:
     cdef WaveChannel wavechannel
     cdef NoiseChannel noisechannel
 
-    cdef uint8_t get(self, uint8_t) noexcept nogil
-    cdef void set(self, uint8_t, uint8_t) noexcept nogil
+    cdef uint8_t get(self, uint8_t) noexcept
+    cdef void set(self, uint8_t, uint8_t) noexcept
 
     @cython.locals(cycles=uint64_t, _cycles=uint64_t)
-    cdef void tick(self, uint64_t) noexcept nogil
-    cdef void sample(self) noexcept nogil
-    cdef uint8_t pcm12(self) noexcept nogil
-    cdef uint8_t pcm34(self) noexcept nogil
-    cdef void clear_buffer(self) noexcept nogil
-    cdef void reset_apu_div(self) noexcept nogil
+    cdef void tick(self, uint64_t) noexcept
+    cdef void sample(self) noexcept
+    cdef uint8_t pcm12(self) noexcept
+    cdef uint8_t pcm34(self) noexcept
+    cdef void clear_buffer(self) noexcept
+    cdef void reset_apu_div(self) noexcept
     cdef void stop(self) noexcept
 
     cdef int save_state(self, IntIOInterface) except -1
@@ -92,13 +92,13 @@ cdef class ToneChannel:
     cdef int64_t waveframe # Wave frame index into wave table entries
     cdef int64_t volume # Current volume level, modulated by envelope
 
-    cdef uint8_t getreg(self, uint8_t) noexcept nogil
-    cdef void setreg(self, uint8_t, uint8_t) noexcept nogil
-    cdef void tick(self, uint64_t) noexcept nogil
-    cdef void tick_length(self) noexcept nogil
-    cdef void tick_envelope(self) noexcept nogil
-    cdef uint8_t sample(self) noexcept nogil
-    cdef void trigger(self) noexcept nogil
+    cdef uint8_t getreg(self, uint8_t) noexcept
+    cdef void setreg(self, uint8_t, uint8_t) noexcept
+    cdef void tick(self, uint64_t) noexcept
+    cdef void tick_length(self) noexcept
+    cdef void tick_envelope(self) noexcept
+    cdef uint8_t sample(self) noexcept
+    cdef void trigger(self) noexcept
 
     cdef int save_state(self, IntIOInterface) except -1
     cdef int load_state(self, IntIOInterface, int) except -1
@@ -113,8 +113,8 @@ cdef class SweepChannel(ToneChannel):
     cdef int64_t sweeptimer # Sweep timer, counts down to shift pitch
     cdef bint sweepenable # Internal sweep enable flag
     cdef int64_t shadow # Shadow copy of period register for ignoring writes to sndper
-    cdef void tick_sweep(self) noexcept nogil
-    cdef bint sweep(self, bint) noexcept nogil
+    cdef void tick_sweep(self) noexcept
+    cdef bint sweep(self, bint) noexcept
 
 
 cdef class WaveChannel:
@@ -139,14 +139,14 @@ cdef class WaveChannel:
     cdef int64_t waveframe # Wave frame index into wave table entries
     cdef int64_t volumeshift # Bitshift for volume, set by volreg
 
-    cdef uint8_t getreg(self, uint8_t) noexcept nogil
-    cdef void setreg(self, uint8_t, uint8_t) noexcept nogil
-    cdef void tick(self, uint64_t) noexcept nogil
-    cdef void tick_length(self) noexcept nogil
-    cdef uint8_t sample(self) noexcept nogil
-    cdef void trigger(self) noexcept nogil
-    cdef uint8_t getwavebyte(self, uint8_t) noexcept nogil
-    cdef void setwavebyte(self, uint8_t, uint8_t) noexcept nogil
+    cdef uint8_t getreg(self, uint8_t) noexcept
+    cdef void setreg(self, uint8_t, uint8_t) noexcept
+    cdef void tick(self, uint64_t) noexcept
+    cdef void tick_length(self) noexcept
+    cdef uint8_t sample(self) noexcept
+    cdef void trigger(self) noexcept
+    cdef uint8_t getwavebyte(self, uint8_t) noexcept
+    cdef void setwavebyte(self, uint8_t, uint8_t) noexcept
 
     cdef int save_state(self, IntIOInterface) except -1
     cdef int load_state(self, IntIOInterface, int) except -1
@@ -177,13 +177,13 @@ cdef class NoiseChannel:
     cdef int64_t lfsrfeed # Bit mask for inserting feedback in shift register
     cdef int64_t volume # Current volume level, modulated by envelope
 
-    cdef uint8_t getreg(self, uint8_t) noexcept nogil
-    cdef void setreg(self, uint8_t, uint8_t) noexcept nogil
-    cdef void tick(self, uint64_t) noexcept nogil
-    cdef void tick_length(self) noexcept nogil
-    cdef void tick_envelope(self) noexcept nogil
-    cdef uint8_t sample(self) noexcept nogil
-    cdef void trigger(self) noexcept nogil
+    cdef uint8_t getreg(self, uint8_t) noexcept
+    cdef void setreg(self, uint8_t, uint8_t) noexcept
+    cdef void tick(self, uint64_t) noexcept
+    cdef void tick_length(self) noexcept
+    cdef void tick_envelope(self) noexcept
+    cdef uint8_t sample(self) noexcept
+    cdef void trigger(self) noexcept
 
     cdef int save_state(self, IntIOInterface) except -1
     cdef int load_state(self, IntIOInterface, int) except -1

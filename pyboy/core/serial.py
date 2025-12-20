@@ -76,7 +76,7 @@ class Serial:
 
     def set_SC(self, value):
         self.SC = value & 0xFF
-        self.transfer_enabled = bool(self.SC & 0x80)
+        self.transfer_enabled = (self.SC & 0x80) != 0
 
     def recv_thread(self):
         while not self.quitting:
@@ -158,4 +158,5 @@ class Serial:
             self.binding_connection.close()
         self.connection = None
         self.binding_connection = None
-        self.recv_t.join()
+        if getattr(self, "recv_t", None):
+            self.recv_t.join()

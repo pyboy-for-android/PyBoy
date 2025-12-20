@@ -542,9 +542,9 @@ class Motherboard:
                     self.serialbuffer[self.serialbuffer_count] = value
                     self.serialbuffer_count += 1
                     self.serialbuffer_count &= 0x3FF
-                    self.serial.SB = value
+                    self.serial.set_SB(value)
                 elif i == 0xFF02:
-                    self.serial.SC = value
+                    self.serial.set_SC(value)
             elif 0xFF04 <= i <= 0xFF07:
                 if self.timer.tick(self.cpu.cycles):
                     self.cpu.set_interruptflag(INTR_TIMER)
