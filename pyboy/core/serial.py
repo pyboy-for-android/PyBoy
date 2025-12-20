@@ -7,6 +7,7 @@ import threading
 import time
 
 import pyboy
+from pyboy.utils import MAX_CYCLES
 
 logger = pyboy.logging.get_logger(__name__)
 
@@ -29,6 +30,7 @@ class Serial:
         self.cycles_count = 0 # Number of cycles since last transfer
         self.cycles_target = CPU_FREQ // SERIAL_FREQ
         self.serial_interrupt_based = serial_interrupt_based
+        self._cycles_to_interrupt = MAX_CYCLES
 
         self.recv = queue.Queue()
 
@@ -69,12 +71,19 @@ class Serial:
         self.recv_t.daemon = True
         self.recv_t.start()
 
+    def set_SB(self, value):
+        self.SB = value & 0xFF
+
+    def set_SC(self, value):
+        self.SC = value & 0xFF
+        self.transfer_enabled = bool(self.SC & 0x80)
+
     def recv_thread(self):
         while not self.quitting:
             try:
                 data = self.connection.recv(1)
                 self.recv.put(data)
-            except BlockingIOError as e:
+            except BlockingIOError:
                 pass
             except ConnectionResetError as e:
                 print(f"Connection reset by peer: {e}")
@@ -91,6 +100,8 @@ class Serial:
         if self.connection is None:
             # No connection, no serial
             self.SB = 0xFF
+            self._cycles_to_interrupt = MAX_CYCLES
+            self.cycles_count = 0 
             return False
 
         if self.SC & 0x80 == 0: # Check if transfer is enabled
@@ -98,7 +109,9 @@ class Serial:
 
         self.cycles_count += cycles # Accumulate cycles
 
-        if self.cycles_to_transmit() == 0:
+        self._cycles_to_interrupt = self.cycles_to_transmit()
+
+        if self._cycles_to_interrupt == 0:
             if not self.waiting_for_byte:
                 self.send_bit()
             time.sleep(1 / SERIAL_FREQ)

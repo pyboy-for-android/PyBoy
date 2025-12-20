@@ -40,7 +40,6 @@ cdef class Motherboard:
     cdef pyboy.core.serial.Serial serial
     cdef pyboy.core.sound.Sound sound
     cdef pyboy.core.cartridge.base_mbc.BaseMBC cartridge
-    cdef pyboy.core.serial.Serial serial
     cdef bint serial_enabled
     cdef bint bootrom_enabled
     cdef char[1024] serialbuffer

@@ -52,7 +52,6 @@ class Motherboard:
             logger.debug("Cartridge type auto-detected to %s", ("CGB" if self.cartridge.cgb else "DMG"))
 
         self.timer = timer.Timer()
-        self.serial = serial.Serial()
         self.interaction = interaction.Interaction()
         self.ram = ram.RAM(cgb, randomize=randomize)
         self.cpu = cpu.CPU(self)
@@ -334,7 +333,7 @@ class Motherboard:
                         self.lcd._cycles_to_interrupt,  # TODO: Be more agreesive. Only if actual interrupt enabled.
                         self.lcd._cycles_to_frame,
                         self.sound._cycles_to_interrupt,
-                        self.serial.cycles_to_transmit,
+                        self.serial._cycles_to_interrupt,
                         mode0_cycles,
                     ),
                 )
@@ -353,7 +352,7 @@ class Motherboard:
             if self.timer.tick(self.cpu.cycles):
                 self.cpu.set_interruptflag(INTR_TIMER)
 
-            if self.serial_enabled and self.serial.tick(cycles):
+            if self.serial_enabled and self.serial.tick(self.cpu.cycles):
                 self.cpu.set_interruptflag(INTR_SERIAL)
 
             if lcd_interrupt := self.lcd.tick(self.cpu.cycles):

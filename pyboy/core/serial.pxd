@@ -21,6 +21,7 @@ cdef class Serial:
     cdef object binding_connection
     cdef int is_master
     cdef bint transfer_enabled
+    cdef unsigned long long _cycles_to_interrupt
 
     cpdef send_bit(self)
     cpdef bint tick(self, int cycles) noexcept with gil
