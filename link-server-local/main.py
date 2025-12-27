@@ -17,5 +17,13 @@ pyboy = PyBoy(
     link_recv_queue=link_client.recv_queue,
 )
 
-while True:
-    pyboy.tick()
+try:
+    while pyboy.tick():
+        pass
+except KeyboardInterrupt:
+    print("\nCerrando por teclado...")
+finally:
+    # Código de limpieza para cerrar sockets y liberar recursos
+    print("Cerrando conexión y emulador...")
+    link_client.close()
+    pyboy.stop()
