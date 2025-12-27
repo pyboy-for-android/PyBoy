@@ -1,10 +1,4 @@
-import os
-import platform
 import queue
-import select
-import socket
-import threading
-import time
 
 import pyboy
 from pyboy.utils import MAX_CYCLES
@@ -12,7 +6,7 @@ from pyboy.utils import MAX_CYCLES
 logger = pyboy.logging.get_logger(__name__)
 
 SERIAL_FREQ = 8192 # Hz
-CPU_FREQ = 4194304 # Hz  # Corrected CPU Frequency
+CPU_FREQ = 4194304 # Hz
 
 
 class Serial:
@@ -24,7 +18,7 @@ class Serial:
         self.link_send = link_send
         self.recv_queue = link_recv_queue
 
-        self.trans_bits = 0
+        self.trans_bits = 0          # usado como "ya envié"
         self.cycles_count = 0
         self.cycles_target = CPU_FREQ // SERIAL_FREQ
         self._cycles_to_interrupt = MAX_CYCLES
@@ -34,6 +28,9 @@ class Serial:
 
     def set_SC(self, value):
         self.SC = value & 0xFF
+        if self.SC & 0x80:
+            # nueva transferencia → permitir envío
+            self.trans_bits = 0
 
     def tick(self, cycles):
         if not self.link_send or not self.recv_queue:
@@ -49,16 +46,20 @@ class Serial:
 
         self.cycles_count = 0
 
-        # enviar byte local SOLO una vez por transferencia
         if self.trans_bits == 0:
-            self.link_send(self.SB)
+            try:
+                self.link_send(self.SB)
+            except Exception:
+                pass
+            self.trans_bits = 1
 
         try:
             incoming = self.recv_queue.get_nowait()
-        except:
-            return False
+        except queue.Empty:
+            incoming = 0xFF  # NUNCA bloquear
 
-        self.SB = incoming
+
+        self.SB = incoming & 0xFF
         self.trans_bits = 0
         self.SC &= 0x7F  # clear transfer flag
         return True
