@@ -31,10 +31,9 @@ class Motherboard:
         sound_emulated,
         sound_sample_rate,
         cgb,
+        link_send,
+        link_recv_queue,
         randomize=False,
-        serial_address=None,
-        serial_bind=None,
-        serial_interrupt_based=False,
     ):
         if bootrom_file is not None:
             logger.info("Boot-ROM file provided")
@@ -55,8 +54,8 @@ class Motherboard:
         self.interaction = interaction.Interaction()
         self.ram = ram.RAM(cgb, randomize=randomize)
         self.cpu = cpu.CPU(self)
-        self.serial_enabled = (serial_address or None) or (serial_bind or None)
-        self.serial = serial.Serial(self, serial_address or None, serial_bind or None, serial_interrupt_based)
+        self.serial_enabled = (link_send or None) or (link_recv_queue or None)
+        self.serial = serial.Serial(self, link_send or None, link_recv_queue or None)
 
         if cgb:
             self.lcd = lcd.CGBLCD(
