@@ -92,6 +92,8 @@ class PyBoy:
         color_palette=defaults["color_palette"],
         cgb_color_palette=defaults["cgb_color_palette"],
         title_status=False,
+        link_send=None,
+        link_recv_queue=None,
         **kwargs,
     ):
         """
@@ -208,6 +210,8 @@ class PyBoy:
             sound_emulated,
             sound_sample_rate,
             cgb,
+            link_send,
+            link_recv_queue,
             randomize=randomize,
         )
 
@@ -479,22 +483,22 @@ class PyBoy:
                 # NOTE: Potentially reinject breakpoint that we have now stepped passed
                 self.mb.breakpoint_reinject()
 
-                with cython.gil:
-                    # NOTE: PC has not been incremented when hitting breakpoint!
-                    breakpoint_meta = self.mb.breakpoint_reached()
-                    if breakpoint_meta != (-1, -1, -1):
-                        bank, addr, _ = breakpoint_meta
-                        self.mb.breakpoint_remove(bank, addr)
-                        self.mb.breakpoint_singlestep_latch = 0
+                
+                # NOTE: PC has not been incremented when hitting breakpoint!
+                breakpoint_meta = self.mb.breakpoint_reached()
+                if breakpoint_meta != (-1, -1, -1):
+                    bank, addr, _ = breakpoint_meta
+                    self.mb.breakpoint_remove(bank, addr)
+                    self.mb.breakpoint_singlestep_latch = 0
 
+                    if not self._handle_hooks():
+                        self._plugin_manager.handle_breakpoint()
+                else:
+                    if self.mb.breakpoint_singlestep_latch:
                         if not self._handle_hooks():
                             self._plugin_manager.handle_breakpoint()
-                    else:
-                        if self.mb.breakpoint_singlestep_latch:
-                            if not self._handle_hooks():
-                                self._plugin_manager.handle_breakpoint()
-                        # Keep singlestepping on, if that's what we're doing
-                        self.mb.breakpoint_singlestep = self.mb.breakpoint_singlestep_latch
+                    # Keep singlestepping on, if that's what we're doing
+                    self.mb.breakpoint_singlestep = self.mb.breakpoint_singlestep_latch
 
             self.frame_count += 1
         self._post_handle_events()
@@ -549,13 +553,13 @@ class PyBoy:
         _count = count
         running = False
         t_start = time.perf_counter_ns()
-        with cython.nogil:
-            while count != 0:
-                # Only render screen and sample sound on last tick to improve performance
-                _render = render and count == 1
-                _sound = sound and count == 1
-                running = self._tick(_render, _sound)
-                count -= 1
+        
+        while count != 0:
+            # Only render screen and sample sound on last tick to improve performance
+            _render = render and count == 1
+            _sound = sound and count == 1
+            running = self._tick(_render, _sound)
+            count -= 1
         t_tick = time.perf_counter_ns()
         self._post_tick()
         t_post = time.perf_counter_ns()
