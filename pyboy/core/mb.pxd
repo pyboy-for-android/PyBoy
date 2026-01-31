@@ -57,7 +57,7 @@ cdef class Motherboard:
     cdef int64_t breakpoint_waiting
     cdef int64_t breakpoint_add(self, int64_t, int64_t) except -1 
     cdef int64_t breakpoint_remove(self, int64_t, int64_t) except -1 
-    cdef inline tuple[int64_t, int64_t, int64_t] breakpoint_reached(self) noexcept 
+    cdef inline tuple breakpoint_reached(self) noexcept
     cdef inline void breakpoint_reinject(self) noexcept 
 
     cdef void buttonevent(self, WindowEvent) noexcept
