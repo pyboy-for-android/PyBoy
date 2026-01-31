@@ -1,78 +1,59 @@
-#
-# License: See LICENSE.md file
-# GitHub: https://github.com/Baekalfen/PyBoy
-#
-
+import queue
 from pyboy.utils import MAX_CYCLES
 
-CYCLES_8192HZ = 128
-
+# Asegúrate de que este archivo reemplace al original en tu instalación de PyBoy
+# o que estés inyectándolo correctamente.
 
 class Serial:
-    def __init__(self):
-        self.SB = 0xFF  # Always 0xFF for a disconnected link cable
+    def __init__(self, mb, link_send=None, link_recv_queue=None):
+        self.mb = mb
         self.SC = 0
-        self.transfer_enabled = 0
-        self.internal_clock = 0
-        self._cycles_to_interrupt = 0
-        self.last_cycles = 0
-        self.clock = 0
-        self.clock_target = MAX_CYCLES
+        self.SB = 0
+
+        self.link_send = link_send
+        self.recv_queue = link_recv_queue
+
+        self.sent = False
+        self.stopped = False
+        self._cycles_to_interrupt = MAX_CYCLES
 
     def set_SB(self, value):
-        # Always 0xFF when cable is disconnected. Connecting is not implemented yet.
-        self.SB = 0xFF
+        self.SB = value & 0xFF
 
-    def set_SC(self, value):  # cgb, double_speed
-        self.SC = value
-        self.transfer_enabled = self.SC & 0x80
-        # TODO:
-        # if cgb and (self.SC & 0b10): # High speed transfer
-        #     self.double_speed = ...
-        self.internal_clock = self.SC & 1  # 0: external, 1: internal
-        if self.internal_clock:
-            self.clock_target = self.clock + 8 * CYCLES_8192HZ
-        else:
-            # Will never complete, as there is no connection
-            self.transfer_enabled = 0  # Technically it is enabled, but no reason to track it.
-            self.clock_target = MAX_CYCLES
-        self._cycles_to_interrupt = self.clock_target - self.clock
+    def set_SC(self, value):
+        self.SC = value & 0xFF
+        # Si el juego inicia una transferencia (bit 7), reseteamos el estado de envío
+        if self.SC & 0x80:
+            self.sent = False
 
-    def tick(self, _cycles):
-        cycles = _cycles - self.last_cycles
-        if cycles == 0:
+    def tick(self, cycles):
+        if self.stopped or not self.link_send or not self.recv_queue:
             return False
-        self.last_cycles = _cycles
 
-        self.clock += cycles
+        if not (self.SC & 0x80):
+            return False
 
-        interrupt = False
-        if self.transfer_enabled and self.clock >= self.clock_target:
-            self.SC &= 0x80
-            self.transfer_enabled = 0
-            # self._cycles_to_interrupt = MAX_CYCLES
-            self.clock_target = MAX_CYCLES
-            interrupt = True
+        # 1. Enviar byte
+        if not self.sent:
+            try:
+                self.link_send(self.SB)
+                self.sent = True
+            except:
+                return False
 
-        self._cycles_to_interrupt = self.clock_target - self.clock
-        return interrupt
+        # 2. Recibir byte (BLOQUEANTE)
+        try:
+            # Esperamos hasta 500ms. Si no llega nada, devolvemos False para reintentar.
+            # Al ser bloqueante, el emulador se "congela" un instante esperando al otro.
+            incoming = self.recv_queue.get(block=True, timeout=0.5)
+            self.SB = incoming & 0xFF
+            self.sent = False
+            self.SC &= 0x7F 
+            return True
+        except queue.Empty:
+            # Si hay timeout, devolvemos False. Esto evita que el emulador 
+            # asuma que recibió un 0xFF por error.
+            return False
 
-    def save_state(self, f):
-        f.write(self.SB)
-        f.write(self.SC)
-        f.write(self.transfer_enabled)
-        f.write(self.internal_clock)
-        f.write_64bit(self.last_cycles)
-        f.write_64bit(self._cycles_to_interrupt)
-        f.write_64bit(self.clock)
-        f.write_64bit(self.clock_target)
-
-    def load_state(self, f, state_version):
-        self.SB = f.read()
-        self.SC = f.read()
-        self.transfer_enabled = f.read()
-        self.internal_clock = f.read()
-        self.last_cycles = f.read_64bit()
-        self._cycles_to_interrupt = f.read_64bit()
-        self.clock = f.read_64bit()
-        self.clock_target = f.read_64bit()
+    def stop(self):
+        self.stopped = True

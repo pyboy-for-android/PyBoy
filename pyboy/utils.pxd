@@ -33,7 +33,7 @@ cdef class IntIOWrapper(IntIOInterface):
 ##############################################################
 # Misc
 
-cdef inline uint64_t double_to_uint64_ceil(double val) noexcept nogil:
+cdef inline uint64_t double_to_uint64_ceil(double val) noexcept:
     return <uint64_t> ceil(val)
 
 cdef inline uint8_t[:] malloc(size_t n) noexcept:

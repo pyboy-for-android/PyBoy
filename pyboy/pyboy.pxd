@@ -83,12 +83,12 @@ cdef class PyBoy:
     cpdef int load_state(self, object) except -1
 
     @cython.locals(state_path=str)
-    cdef void _handle_events(self, list) noexcept with gil
+    cdef void _handle_events(self, list) noexcept 
     cpdef void _pause(self) noexcept
     cpdef void _unpause(self) noexcept
     cdef void _update_window_title(self) noexcept
     cdef void _post_tick(self) noexcept
-    cdef void _post_handle_events(self) noexcept with gil
+    cdef void _post_handle_events(self) noexcept 
 
     cdef dict _hooks
     cdef object symbols_file

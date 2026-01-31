@@ -92,6 +92,8 @@ class PyBoy:
         color_palette=defaults["color_palette"],
         cgb_color_palette=defaults["cgb_color_palette"],
         title_status=False,
+        link_send=None,
+        link_recv_queue=None,
         **kwargs,
     ):
         """
@@ -208,6 +210,8 @@ class PyBoy:
             sound_emulated,
             sound_sample_rate,
             cgb,
+            link_send,
+            link_recv_queue,
             randomize=randomize,
         )
 
@@ -479,6 +483,7 @@ class PyBoy:
                 # NOTE: Potentially reinject breakpoint that we have now stepped passed
                 self.mb.breakpoint_reinject()
 
+                
                 # NOTE: PC has not been incremented when hitting breakpoint!
                 breakpoint_meta = self.mb.breakpoint_reached()
                 if breakpoint_meta != (-1, -1, -1):
@@ -548,6 +553,7 @@ class PyBoy:
         _count = count
         running = False
         t_start = time.perf_counter_ns()
+        
         while count != 0:
             # Only render screen and sample sound on last tick to improve performance
             _render = render and count == 1

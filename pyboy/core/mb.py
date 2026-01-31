@@ -32,6 +32,8 @@ class Motherboard:
         sound_emulated,
         sound_sample_rate,
         cgb,
+        link_send,
+        link_recv_queue,
         randomize=False,
     ):
         if bootrom_file is not None:
@@ -48,10 +50,11 @@ class Motherboard:
             cgb = self.cartridge.cgb
 
         self.timer = timer.Timer()
-        self.serial = serial.Serial()
         self.interaction = interaction.Interaction()
         self.ram = ram.RAM(cgb, randomize=randomize)
-        self.cpu = pyboy.core.cpu.CPU(self)
+        self.cpu = pyboy.corecpu.CPU(self)
+        self.serial_enabled = (link_send or None) or (link_recv_queue or None)
+        self.serial = serial.Serial(self, link_send or None, link_recv_queue or None)
 
         if cgb:
             self.lcd = lcd.CGBLCD(
@@ -227,6 +230,7 @@ class Motherboard:
 
     def stop(self, save):
         self.sound.stop()
+        self.serial.stop()
         if save:
             self.cartridge.stop()
 
@@ -348,6 +352,9 @@ class Motherboard:
 
             if self.timer.tick(self.cpu.cycles):
                 self.cpu.set_interruptflag(INTR_TIMER)
+
+            if self.serial_enabled and self.serial.tick(self.cpu.cycles):
+                self.cpu.set_interruptflag(INTR_SERIAL)
 
             lcd_interrupt = self.lcd.tick(self.cpu.cycles)
             if lcd_interrupt:

@@ -21,4 +21,4 @@ cdef class GameShark:
     cpdef int64_t add(self, str code) except -1
     cpdef int64_t remove(self, str code, bint restore_value=*) except -1
     cpdef int64_t clear_all(self, bint restore_value=*) except -1
-    cdef int64_t tick(self) except -1 with gil
+    cdef int64_t tick(self) except -1 
