@@ -52,7 +52,7 @@ class Motherboard:
         self.timer = timer.Timer()
         self.interaction = interaction.Interaction()
         self.ram = ram.RAM(cgb, randomize=randomize)
-        self.cpu = pyboy.corecpu.CPU(self)
+        self.cpu = pyboy.core.cpu.CPU(self)
         self.serial_enabled = (link_send or None) or (link_recv_queue or None)
         self.serial = serial.Serial(self, link_send or None, link_recv_queue or None)
 
